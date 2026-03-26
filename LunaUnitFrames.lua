@@ -648,7 +648,7 @@ function LunaUF:HideBlizzard()
 		PlayerFrame:RegisterEvent("PLAYTIME_CHANGED")
 		PlayerFrame:Show()
 --		PlayerFrame_Update()
-		UnitFrameHealthBar_Update(PlayerFrame.healthhar, "player")
+		UnitFrameHealthBar_Update(PlayerFrame.healthbar, "player")
 		UnitFrameManaBar_Update(PlayerFrame.manabar, "player")
 	else
 		PlayerFrame:UnregisterAllEvents()

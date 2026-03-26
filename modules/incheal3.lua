@@ -53,27 +53,8 @@ function Incheal:FullUpdate(frame)
 	local healthHeight = frameHeight * (health / maxHealth)
 	local healthWidth = frameWidth * (health / maxHealth)
 
-	 healBar:Show()
-    healBar:ClearAllPoints()
-
-	-- failsafe: auto-hide if no HealStop is received
-	local inchealFrame = frame.incheal
-	local healBar = inchealFrame.healBar
-	healBar.startTime = GetTime()
-
-	-- failsafe: auto-hide if no HealStop is received
-	local inchealFrame = frame.incheal
-	local healBar = inchealFrame.healBar
-	healBar.startTime = GetTime()
-
-	inchealFrame:SetScript("OnUpdate", function()
-		if healBar:IsShown() and (GetTime() - healBar.startTime) > 4 then
-			if (HealComm:getHeal(UnitName(frame.unit)) or 0) <= 0 then
-				healBar:Hide()
-				inchealFrame:SetScript("OnUpdate", nil)
-			end
-		end
-	end)
+	healBar:Show()
+	healBar:ClearAllPoints()
 
 	if LunaUF.db.profile.units[frame.unitGroup].healthBar.vertical then
 		local incHeight = frameHeight * (healvalue / maxHealth)

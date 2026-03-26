@@ -2558,7 +2558,7 @@ function LunaUF:CreateOptionsMenu()
 			getglobal("Enable"..LunaUF.unitList[i-1].."Heal".."Text"):SetText(L["Enable"])
 
 			LunaOptionsFrame.pages[i].healsizeslider = CreateFrame("Slider", "HealSizeSlider"..LunaUF.unitList[i-1], LunaOptionsFrame.pages[i], "OptionsSliderTemplate")
-			LunaOptionsFrame.pages[i].healsizeslider:SetMinMaxValues(0,20)
+			LunaOptionsFrame.pages[i].healsizeslider:SetMinMaxValues(0,55)
 			LunaOptionsFrame.pages[i].healsizeslider:SetValueStep(1)
 			LunaOptionsFrame.pages[i].healsizeslider:SetScript("OnValueChanged", function()
 				local unit = this:GetParent().id
