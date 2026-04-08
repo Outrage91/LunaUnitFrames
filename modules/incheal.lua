@@ -34,53 +34,25 @@ end
 
 function Incheal:FullUpdate(frame)
 	if not frame.unit then return end
-
 	local healvalue = HealComm:getHeal(UnitName(frame.unit))
 	local healBar = frame.incheal.healBar
 	local health, maxHealth = UnitHealth(frame.unit), UnitHealthMax(frame.unit)
-
-	healBar:SetStatusBarColor(LunaUF.db.profile.healthColors.inc.r, 
-                              LunaUF.db.profile.healthColors.inc.g, 
-                              LunaUF.db.profile.healthColors.inc.b, 0.75)
-
-	-- Cleanup: Wenn keine Heilung mehr aktiv, Balken verstecken
-	if not healvalue or healvalue <= 0 then
+	healBar:SetStatusBarColor(LunaUF.db.profile.healthColors.inc.r, LunaUF.db.profile.healthColors.inc.g, LunaUF.db.profile.healthColors.inc.b, 0.75)
+	if healvalue == 0 then
 		healBar:Hide()
 		return
 	end
-
 	local frameHeight, frameWidth = frame.healthBar:GetHeight(), frame.healthBar:GetWidth()
 	local healthHeight = frameHeight * (health / maxHealth)
 	local healthWidth = frameWidth * (health / maxHealth)
-
-	 healBar:Show()
-    healBar:ClearAllPoints()
-
-	-- failsafe: auto-hide if no HealStop is received
-	local inchealFrame = frame.incheal
-	local healBar = inchealFrame.healBar
-	healBar.startTime = GetTime()
-
-	-- failsafe: auto-hide if no HealStop is received
-	local inchealFrame = frame.incheal
-	local healBar = inchealFrame.healBar
-	healBar.startTime = GetTime()
-
-	inchealFrame:SetScript("OnUpdate", function()
-		if healBar:IsShown() and (GetTime() - healBar.startTime) > 4 then
-			if (HealComm:getHeal(UnitName(frame.unit)) or 0) <= 0 then
-				healBar:Hide()
-				inchealFrame:SetScript("OnUpdate", nil)
-			end
-		end
-	end)
-
+	healBar:Show()
+	healBar:ClearAllPoints()
 	if LunaUF.db.profile.units[frame.unitGroup].healthBar.vertical then
 		local incHeight = frameHeight * (healvalue / maxHealth)
 		if (healthHeight + incHeight) > (frameHeight * (LunaUF.db.profile.units[frame.unitGroup].incheal.cap + 1)) then
 			incHeight = (frameHeight * (LunaUF.db.profile.units[frame.unitGroup].incheal.cap + 1)) - healthHeight
 		end
-		if incHeight <= 0 then
+		if incHeight == 0 then
 			healBar:Hide()
 			return
 		end
@@ -96,7 +68,7 @@ function Incheal:FullUpdate(frame)
 		if (healthWidth + incWidth) > (frameWidth * (LunaUF.db.profile.units[frame.unitGroup].incheal.cap + 1)) then
 			incWidth = (frameWidth * (LunaUF.db.profile.units[frame.unitGroup].incheal.cap + 1)) - healthWidth
 		end
-		if incWidth <= 0 then
+		if incWidth == 0 then
 			healBar:Hide()
 			return
 		end

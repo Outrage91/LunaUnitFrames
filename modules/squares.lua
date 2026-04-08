@@ -38,33 +38,31 @@ function Squares:OnEnable(frame)
 		frame.squares = CreateFrame("Frame", frame:GetName().."SquareModule", frame)
 		frame.squares:SetAllPoints(frame)
 		frame.squares:SetFrameLevel(6)
-		
+
 		frame.squares.buffs = {}
 		frame.squares.debuffs = {}
 		frame.squares.trackdebuffs = {}
 		frame.squares.centericons = {}
-		
-		for i = 1, 6 do
+
+		for i = 1, 3 do
 			frame.squares.buffs[i] = CreateFrame("Frame", nil, frame.squares)
 			frame.squares.buffs[i]:SetBackdrop(LunaUF.constants.backdrop)
 			frame.squares.buffs[i]:SetBackdropColor(0,0,0)
 			frame.squares.buffs[i].texture = frame.squares.buffs[i]:CreateTexture(nil, "ARTWORK")
 			frame.squares.buffs[i].texture:SetAllPoints(frame.squares.buffs[i])
-		end
-	
-		for i = 1, 3 do
+
 			frame.squares.debuffs[i] = CreateFrame("Frame", nil, frame.squares)
 			frame.squares.debuffs[i]:SetBackdrop(LunaUF.constants.backdrop)
 			frame.squares.debuffs[i]:SetBackdropColor(0,0,0)
 			frame.squares.debuffs[i].texture = frame.squares.debuffs[i]:CreateTexture(nil, "ARTWORK")
 			frame.squares.debuffs[i].texture:SetAllPoints(frame.squares.debuffs[i])
-		
+
 			frame.squares.trackdebuffs[i] = CreateFrame("Frame", nil, frame.squares)
 			frame.squares.trackdebuffs[i]:SetBackdrop(LunaUF.constants.backdrop)
 			frame.squares.trackdebuffs[i]:SetBackdropColor(0,0,0)
 			frame.squares.trackdebuffs[i].texture = frame.squares.trackdebuffs[i]:CreateTexture(nil, "ARTWORK")
 			frame.squares.trackdebuffs[i].texture:SetAllPoints(frame.squares.trackdebuffs[i])
-			
+
 			frame.squares.centericons[i] = frame.squares:CreateTexture(nil, "ARTWORK")
 			frame.squares.centericons[i]:ClearAllPoints()
 			frame.squares.centericons[i].cd = CreateFrame("Model", frame:GetName().."CD"..i, frame.squares , "CooldownFrameTemplate")
@@ -73,29 +71,29 @@ function Squares:OnEnable(frame)
 			frame.squares.centericons[i].cd:SetHeight(36)
 			frame.squares.centericons[i].cd:SetWidth(36)
 		end
-		
+
 		frame.squares.buffs[1]:SetPoint("TOPRIGHT", frame.squares, "TOPRIGHT")
 		frame.squares.buffs[2]:SetPoint("RIGHT", frame.squares.buffs[1], "LEFT")
-		frame.squares.buffs[3]:SetPoint("RIGHT", frame.squares.buffs[2], "LEFT")
-		frame.squares.buffs[4]:SetPoint("TOP", frame.squares.buffs[1], "BOTTOM")
-		frame.squares.buffs[5]:SetPoint("RIGHT", frame.squares.buffs[4], "LEFT")
-		frame.squares.buffs[6]:SetPoint("RIGHT", frame.squares.buffs[5], "LEFT")
-		
+		frame.squares.buffs[3]:SetPoint("TOP", frame.squares.buffs[1], "BOTTOM")
+
 		frame.squares.debuffs[1]:SetPoint("TOPLEFT", frame.squares, "TOPLEFT")
 		frame.squares.debuffs[2]:SetPoint("LEFT", frame.squares.debuffs[1], "RIGHT")
-		frame.squares.debuffs[3]:SetPoint("LEFT", frame.squares.debuffs[2], "RIGHT")
-		
+		frame.squares.debuffs[3]:SetPoint("TOP", frame.squares.debuffs[1], "BOTTOM")
+
 		frame.squares.trackdebuffs[1]:SetPoint("BOTTOMRIGHT", frame.squares, "BOTTOMRIGHT")
 		frame.squares.trackdebuffs[2]:SetPoint("RIGHT", frame.squares.trackdebuffs[1], "LEFT")
 		frame.squares.trackdebuffs[3]:SetPoint("BOTTOM", frame.squares.trackdebuffs[1], "TOP")
-		
+
 		frame.squares.centericons[1]:SetPoint("CENTER", frame.squares, "CENTER")
 		frame.squares.centericons[1]:SetTexture("Interface\\Icons\\Spell_Nature_Rejuvenation")
+		frame.squares.centericons[1]:Hide()
 		frame.squares.centericons[2]:SetPoint("RIGHT", frame.squares.centericons[1], "LEFT")
 		frame.squares.centericons[2]:SetTexture("Interface\\Icons\\Spell_Holy_Renew")
+		frame.squares.centericons[2]:Hide()
 		frame.squares.centericons[3]:SetPoint("LEFT", frame.squares.centericons[1], "RIGHT")
 		frame.squares.centericons[3]:SetTexture("Interface\\Icons\\Spell_Nature_ResistNature")
-		
+		frame.squares.centericons[3]:Hide()
+
 		frame.squares.aggro = CreateFrame("Frame", nil, frame.squares)
 		frame.squares.aggro:SetBackdrop(LunaUF.constants.backdrop)
 		frame.squares.aggro:SetBackdropColor(0,0,0)
@@ -127,22 +125,28 @@ function Squares:UpdateTimers(frame)
 	if not LunaUF.db.profile.units.raid.squares.hottracker then	return end
 	local start, dur = HealComm:getRejuTime(frame.unit)
 	if start then
+		frame.squares.centericons[1]:Show()
 		LunaCooldownFrame_SetTimer(frame.squares.centericons[1].cd, tonumber(start), tonumber(dur), 1, 1)
 	else
+		frame.squares.centericons[1]:Hide()
 		frame.squares.centericons[1].cd:Hide()
 	end
 
 	start, dur = HealComm:getRenewTime(frame.unit)
 	if start then
+		frame.squares.centericons[2]:Show()
 		LunaCooldownFrame_SetTimer(frame.squares.centericons[2].cd, tonumber(start), tonumber(dur), 1, 1)
 	else
+		frame.squares.centericons[2]:Hide()
 		frame.squares.centericons[2].cd:Hide()
 	end
 
 	start, dur = HealComm:getRegrTime(frame.unit)
 	if start then
+		frame.squares.centericons[3]:Show()
 		LunaCooldownFrame_SetTimer(frame.squares.centericons[3].cd, tonumber(start), tonumber(dur), 1, 1)
 	else
+		frame.squares.centericons[3]:Hide()
 		frame.squares.centericons[3].cd:Hide()
 	end
 end
@@ -164,10 +168,8 @@ function Squares:UpdateAuras(frame)
 	local num = 1
 	local disptype, texture
 	local buffname
-	
-	for _,icon in pairs(frame.squares.centericons) do
-		icon:Hide()
-	end
+
+	Squares:UpdateTimers(frame)
 	for _,icon in pairs(frame.squares.buffs) do
 		icon:Hide()
 	end
@@ -183,20 +185,11 @@ function Squares:UpdateAuras(frame)
 	for k,_ in pairs(debuffs) do
 		debuffs[k] = nil
 	end
-	
+
 	while UnitBuff(frame.unit,i) do
 		ScanTip:ClearLines()
 		ScanTip:SetUnitBuff(frame.unit,i)
 		buffname = LunaScanTipTextLeft1:GetText() or ""
-		if config.hottracker then
-			if buffname == BS["Rejuvenation"] then
-				frame.squares.centericons[1]:Show()
-			elseif buffname == BS["Renew"] then
-				frame.squares.centericons[2]:Show()
-			elseif buffname == BS["Regrowth"] then
-				frame.squares.centericons[3]:Show()
-			end
-		end
 		buffname = string.lower(buffname)
 		for key,buff in pairs(config.buffs.names) do
 			if buff ~= "" and string.find(buffname, string.lower(buff)) then
@@ -204,7 +197,7 @@ function Squares:UpdateAuras(frame)
 				break
 			end
 		end
-		
+
 		i = i + 1
 	end
 
@@ -215,9 +208,6 @@ function Squares:UpdateAuras(frame)
 			if k == 1 and LunaUF.db.profile.units.raid.squares.invertfirstbuff then invert = true end
 			if k == 2 and LunaUF.db.profile.units.raid.squares.invertsecondbuff then invert = true end
 			if k == 3 and LunaUF.db.profile.units.raid.squares.invertthirdbuff then invert = true end
-			if k == 4 and LunaUF.db.profile.units.raid.squares.invertfourthbuff then invert = true end
-			if k == 5 and LunaUF.db.profile.units.raid.squares.invertfifthbuff then invert = true end
-			if k == 6 and LunaUF.db.profile.units.raid.squares.invertsixthbuff then invert = true end
 
 			if invert then
 				if not buffs[k] then
@@ -264,7 +254,7 @@ function Squares:UpdateAuras(frame)
 			frame.squares.debuffs[num]:Show()
 			num = num + 1
 		end
-		
+
 		buffname = string.lower(buffname)
 		for key,debuff in pairs(config.debuffs.names) do
 			if debuff ~= "" and string.find(buffname, debuff) then
@@ -284,34 +274,31 @@ function Squares:UpdateAuras(frame)
 		frame.squares.trackdebuffs[i]:Show()
 		i = i + 1
 	end
-	
+
 end
 
 function Squares:FullUpdate(frame)
 	if not frame.squares then return end
 	local config = LunaUF.db.profile.units.raid.squares
-	
-	for i=1, 6 do
+	for i=1, 3 do
 		frame.squares.buffs[i]:SetHeight(config.outersize)
 		frame.squares.buffs[i]:SetWidth(config.outersize)
-	end
-	
-	for i=1, 3 do
+
 		frame.squares.debuffs[i]:SetHeight(config.outersize)
 		frame.squares.debuffs[i]:SetWidth(config.outersize)
-	
+
 		frame.squares.trackdebuffs[i]:SetHeight(config.outersize)
 		frame.squares.trackdebuffs[i]:SetWidth(config.outersize)
-		
+
 		frame.squares.centericons[i]:SetHeight(config.innersize)
 		frame.squares.centericons[i]:SetWidth(config.innersize)
 		frame.squares.centericons[i].cd:SetScale(config.innersize/36)
 	end
-	
+
 	frame.squares.aggro:SetWidth(config.outersize)
 	frame.squares.aggro:SetHeight(config.outersize)
 	frame.squares.aggro.texture:SetTexture(config.aggrocolor.r,config.aggrocolor.g,config.aggrocolor.b)
-	
+
 	Squares:UpdateTimers(frame)
 	Squares:UpdateAggro(frame)
 	Squares:UpdateAuras(frame)
